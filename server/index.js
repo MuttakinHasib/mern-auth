@@ -19,8 +19,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-app.use('/api/user/register', require('./routes/auth'));
+app.use('/api/user/', require('./routes/auth'));
+app.use('/api/user/', require('./routes/auth'));
 app.use('/api/user/activation', require('./controllers/activationController'));
+app.use('/api/password/forget', require('./controllers/forgetController'));
+app.use('/api/password/forget', require('./controllers/forgetController'));
+app.use('/api/resetPassword', require('./controllers/resetController'));
 
 const port = process.env.PORT || 9000;
 app.listen(port, () => console.log(`Running on : ${port}`));

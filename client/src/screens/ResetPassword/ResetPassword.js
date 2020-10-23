@@ -1,53 +1,57 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Lock, LogIn } from '@geist-ui/react-icons';
 import { toast, ToastContainer } from 'react-toastify';
 import { Link, Redirect } from 'react-router-dom';
 import { Button } from '@geist-ui/react';
-import { LogIn, UserPlus } from '@geist-ui/react-icons';
 import axios from 'axios';
 import { isAuth } from '../../helpers/auth';
 import authSvg from '../../assets/images/auth.svg';
 
-const Register = () => {
+const ResetPassword = ({ match }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
     password1: '',
     password2: '',
+    token: '',
   });
   const [loading, setLoading] = useState(false);
-  
-  const { name, email, password1, password2 } = formData;
+
+  const { password1, password2, token } = formData;
+
+  useEffect(() => {
+    let token = match.params.token;
+    if (token) {
+      setFormData({ ...formData, token });
+    }
+  }, []);
+
   const onChange = text => e =>
     setFormData({ ...formData, [text]: e.target.value });
 
   const onSubmit = async e => {
     e.preventDefault();
 
-    if (name && email && password1) {
-      if (password1 === password2) {
-        try {
-          setLoading(true);
-          const res = await axios.post(
-            `${process.env.REACT_APP_API_URL}/user/register`,
-            {
-              name,
-              email,
-              password: password1,
-            }
-          );
-          setFormData({ name: '', email: '', password1: '', password2: '' });
-          setLoading(false);
-          toast.success(res.data.msg);
-        } catch (err) {
-          toast.error(err.response.data.msg);
-        }
-      } else {
-        toast.error("Passwords don't matches");
+    if (password1 === password2 && password1 && password2) {
+      try {
+        setLoading(true);
+        const res = await axios.put(
+          `${process.env.REACT_APP_API_URL}/resetPassword`,
+          {
+            newPassword: password1,
+            resetPasswordLink: token,
+          }
+        );
+        setFormData({ ...formData, password1: '', password2: '' });
+        setLoading(false);
+        toast.success(res.data.msg);
+      } catch (err) {
+        toast.error(`Something went wrong, ${err.response.data.msg}`);
+        setLoading(false);
       }
     } else {
-      toast.error('Please fill all fields');
+      toast.error("Passwords don't matches");
     }
   };
+
   return (
     <div className='min-h-screen bg-gray-100 text-gray-100 flex justify-center'>
       {isAuth() && <Redirect to='/' />}
@@ -56,7 +60,7 @@ const Register = () => {
         <div className='lg:w-1/2 w-full xl:w-6/12 p-6 sm:p-12'>
           <div className='mt-12 flex flex-col items-center'>
             <h1 className='text-2xl xl:text-3xl font-bold text-black'>
-              Sign Up for MERN Auth
+              Reset your password
             </h1>
             <form
               className='w-full flex-1 mt-8 text-indigo-500'
@@ -64,23 +68,9 @@ const Register = () => {
             >
               <div className='mx-auto max-w-xs relative'>
                 <input
-                  type='text'
-                  className='w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-700 text-sm focus:bg-white mt-5'
-                  placeholder='Enter your Name'
-                  onChange={onChange('name')}
-                  value={name}
-                />
-                <input
-                  type='email'
-                  className='w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-700 text-sm focus:bg-white mt-5'
-                  placeholder='Enter E-mail address'
-                  onChange={onChange('email')}
-                  value={email}
-                />
-                <input
                   type='password'
                   className='w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-700 text-sm focus:bg-white mt-5'
-                  placeholder='Enter password'
+                  placeholder='New password'
                   onChange={onChange('password1')}
                   value={password1}
                 />
@@ -97,10 +87,10 @@ const Register = () => {
                   size='large'
                   loading={loading}
                   style={{ width: '100%' }}
-                  icon={<UserPlus />}
+                  icon={<Lock />}
                   className='mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out'
                 >
-                  Register
+                  Reset password
                 </Button>
               </div>
               <div className='my-5 flex items-center justify-center border-b text-center'>
@@ -135,4 +125,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default ResetPassword;

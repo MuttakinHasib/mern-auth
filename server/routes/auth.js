@@ -4,10 +4,11 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const { check, validationResult } = require('express-validator');
 const User = require('../models/User');
+const { hashPassword } = require('../helpers/hashPassword');
 const router = express.Router();
 
 router.post(
-  '/',
+  '/register',
   [
     check('name', 'Name is required').not().isEmpty(),
     check('email', 'Please include a valid email address').isEmail(),
@@ -24,8 +25,9 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
 
     try {
-      const salt = await bcrypt.genSalt(10);
-      password = await bcrypt.hash(password, salt);
+      // const salt = await bcrypt.genSalt(10);
+      // password = await bcrypt.hash(password, salt);
+      password = await hashPassword(password);
       let user = await User.findOne({ email });
 
       if (user) return res.status(400).json({ msg: 'User already exists' });
@@ -54,6 +56,47 @@ router.post(
       });
 
       res.status(200).json({ msg: `Email has sent to ${email}` });
+    } catch (err) {
+      console.error(err.message);
+      return res.status(400).json({
+        msg: errorHandler(err),
+      });
+    }
+  }
+);
+
+router.post(
+  '/login',
+  [
+    check('email', 'Please include a valid email address').isEmail(),
+    check('password', 'Password is required').exists(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    const { email, password } = req.body;
+
+    if (!errors.isEmpty())
+      return res.status(400).json({ errors: errors.array() });
+
+    try {
+      let user = await User.findOne({ email });
+
+      if (!user) return res.status(400).json({ msg: 'User not founded' });
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) return res.status(400).json({ msg: 'Wrong password' });
+
+      const payload = {
+        user: {
+          id: user.id,
+        },
+      };
+
+      const token = await jwt.sign({ payload }, 'secret', { expiresIn: '7d' });
+
+      const getUser = await User.findById(user._id).select('-password');
+
+      return res.json({ token, user: getUser });
     } catch (err) {
       console.error(err.message);
       return res.status(400).json({

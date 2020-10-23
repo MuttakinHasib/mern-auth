@@ -3,9 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^4.2.2",
+    "@geist-ui/react": "^2.1.0-canary.1",
+    "@geist-ui/react-icons": "^1.0.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "antd": "^4.7.2",
     "axios": "^0.20.0",
     "js-cookie": "^2.2.1",
     "jsonwebtoken": "^8.5.1",
@@ -14,7 +18,7 @@
     "react-facebook-login": "^4.1.1",
     "react-google-login": "^5.1.21",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.3",
+    "react-scripts": "^3.4.4",
     "react-toastify": "^6.0.9",
     "tailwindcss": "^1.8.13"
   },
