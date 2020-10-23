@@ -15,13 +15,14 @@ router.put('/', async (req, res) => {
     const decoded = await jwt.verify(resetPasswordLink, 'Secret');
     if (!decoded)
       return res.status(400).json({ msg: 'Expired Link, try again' });
+
     const { _id } = decoded;
     console.log(_id);
     let user = await User.findOne({ _id });
     if (!user) return res.status(400).json({ msg: 'Something went wrong' });
-    const hashedPassword = await hashPassword(newPassword);
+    const password = await hashPassword(newPassword);
 
-    user = await _.extend(user, { password: hashedPassword });
+    user = await _.extend(user, { password });
 
     await user.save();
 

@@ -2,7 +2,7 @@ const express = require('express');
 const { check, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-const { errorHandler } = require('../helpers/errorHandling');
+// const { errorHandler } = require('../helpers/errorHandling');
 const User = require('../models/User');
 const router = express.Router();
 

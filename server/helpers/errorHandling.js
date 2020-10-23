@@ -11,9 +11,9 @@ const uniqueMessage = err => {
     ]);
 
     output =
-      fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + 'already exists';
+      fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + 'Already exists';
   } catch (err) {
-    output = 'already exists';
+    output = 'Already exists';
   }
   return output;
 };

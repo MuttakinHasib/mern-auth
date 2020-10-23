@@ -26,5 +26,7 @@ app.use('/api/password/forget', require('./controllers/forgetController'));
 app.use('/api/password/forget', require('./controllers/forgetController'));
 app.use('/api/resetPassword', require('./controllers/resetController'));
 
+app.use('/api/googleLogin', require('./controllers/googleLoginController'));
+
 const port = process.env.PORT || 9000;
 app.listen(port, () => console.log(`Running on : ${port}`));

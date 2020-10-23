@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
-import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
+import { Button } from '@geist-ui/react';
+import { Link, Redirect } from 'react-router-dom';
+import { GoogleLogin } from 'react-google-login';
+import { toast, ToastContainer } from 'react-toastify';
+import { LogIn, UserPlus } from '@geist-ui/react-icons';
 import { authenticate, isAuth } from '../../helpers/auth';
 import loginSvg from '../../assets/images/login.svg';
-import { Button } from '@geist-ui/react';
-import { LogIn, UserPlus } from '@geist-ui/react-icons';
 
 const Login = ({ history }) => {
   const [formData, setFormData] = useState({
@@ -48,6 +49,37 @@ const Login = ({ history }) => {
       toast.error('Please fill all fields');
     }
   };
+
+  const sendGoogleToken = async idToken => {
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL}/googleLogin`,
+        {
+          idToken,
+        }
+      );
+      await informParent(res);
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const informParent = res => {
+    authenticate(res, () => {
+      isAuth() && isAuth().role === 'admin'
+        ? history.push('/admin')
+        : history.push('/private');
+    });
+  };
+  const googleSignIn = async res => {
+    try {
+      console.log(res);
+      await sendGoogleToken(res.tokenId);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className='min-h-screen bg-gray-100 text-gray-100 flex justify-center'>
       {isAuth() && <Redirect to='/' />}
@@ -118,6 +150,17 @@ const Login = ({ history }) => {
                     Register
                   </Button>
                 </Link>
+                <GoogleLogin
+                  clientId={`${process.env.REACT_APP_GOOGLE_CLIENT}`}
+                  onSuccess={googleSignIn}
+                  onFailure={googleSignIn}
+                  cookiePolicy={'single_host_origin'}
+                  render={props => (
+                    <button onClick={props.onClick} disabled={props.disabled}>
+                      Sign in with Google
+                    </button>
+                  )}
+                />
               </div>
             </form>
           </div>
