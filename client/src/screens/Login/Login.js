@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Button } from '@geist-ui/react';
 import { Link, Redirect } from 'react-router-dom';
-import { GoogleLogin } from 'react-google-login';
 import { toast, ToastContainer } from 'react-toastify';
 import { LogIn, UserPlus } from '@geist-ui/react-icons';
 import { authenticate, isAuth } from '../../helpers/auth';
 import loginSvg from '../../assets/images/login.svg';
+import GoogleSignIn from '../../Authentication/Google/GoogleSignIn';
+import FacebookSignIn from '../../Authentication/Facebook/FacebookSignIn';
 
 const Login = ({ history }) => {
   const [formData, setFormData] = useState({
@@ -50,35 +51,6 @@ const Login = ({ history }) => {
     }
   };
 
-  const sendGoogleToken = async idToken => {
-    try {
-      const res = await axios.post(
-        `${process.env.REACT_APP_API_URL}/googleLogin`,
-        {
-          idToken,
-        }
-      );
-      await informParent(res);
-      console.log(res);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  const informParent = res => {
-    authenticate(res, () => {
-      isAuth() && isAuth().role === 'admin'
-        ? history.push('/admin')
-        : history.push('/private');
-    });
-  };
-  const googleSignIn = async res => {
-    try {
-      console.log(res);
-      await sendGoogleToken(res.tokenId);
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   return (
     <div className='min-h-screen bg-gray-100 text-gray-100 flex justify-center'>
@@ -92,7 +64,7 @@ const Login = ({ history }) => {
           />
         </div>
         <div className='lg:w-1/2 w-full xl:w-6/12 p-6 sm:p-12'>
-          <div className='mt-12 flex flex-col items-center'>
+          <div className='flex flex-col items-center'>
             <h1 className='text-2xl xl:text-3xl font-bold text-black'>
               Sign in here
             </h1>
@@ -138,7 +110,7 @@ const Login = ({ history }) => {
                   Or sign with email or social login
                 </div>
               </div>
-              <div className='flex flex-col items-center mt-10'>
+              <div className='flex flex-col items-center'>
                 <Link to='/register' className='w-full max-w-xs'>
                   <Button
                     type='secondary-light'
@@ -150,17 +122,8 @@ const Login = ({ history }) => {
                     Register
                   </Button>
                 </Link>
-                <GoogleLogin
-                  clientId={`${process.env.REACT_APP_GOOGLE_CLIENT}`}
-                  onSuccess={googleSignIn}
-                  onFailure={googleSignIn}
-                  cookiePolicy={'single_host_origin'}
-                  render={props => (
-                    <button onClick={props.onClick} disabled={props.disabled}>
-                      Sign in with Google
-                    </button>
-                  )}
-                />
+                <GoogleSignIn />
+                <FacebookSignIn/>
               </div>
             </form>
           </div>

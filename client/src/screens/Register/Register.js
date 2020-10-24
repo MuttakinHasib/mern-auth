@@ -6,6 +6,8 @@ import { LogIn, UserPlus } from '@geist-ui/react-icons';
 import axios from 'axios';
 import { isAuth } from '../../helpers/auth';
 import authSvg from '../../assets/images/auth.svg';
+import GoogleSignIn from '../../Authentication/Google/GoogleSignIn';
+import FacebookSignIn from '../../Authentication/Facebook/FacebookSignIn';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -15,7 +17,7 @@ const Register = () => {
     password2: '',
   });
   const [loading, setLoading] = useState(false);
-  
+
   const { name, email, password1, password2 } = formData;
   const onChange = text => e =>
     setFormData({ ...formData, [text]: e.target.value });
@@ -54,7 +56,7 @@ const Register = () => {
       <ToastContainer />
       <div className='max-w-screen-xl m-0 sm:m-20 bg-white shadow sm:rounded-lg flex justify-center flex-1'>
         <div className='lg:w-1/2 w-full xl:w-6/12 p-6 sm:p-12'>
-          <div className='mt-12 flex flex-col items-center'>
+          <div className='flex flex-col items-center'>
             <h1 className='text-2xl xl:text-3xl font-bold text-black'>
               Sign Up for MERN Auth
             </h1>
@@ -108,7 +110,7 @@ const Register = () => {
                   Or sign with email or social login
                 </div>
               </div>
-              <div className='flex flex-col items-center mt-10'>
+              <div className='flex flex-col items-center'>
                 <Link to='/login' className='w-full max-w-xs'>
                   <Button
                     type='secondary-light'
@@ -120,6 +122,8 @@ const Register = () => {
                     Login
                   </Button>
                 </Link>
+                <GoogleSignIn />
+                <FacebookSignIn/>
               </div>
             </form>
           </div>

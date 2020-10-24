@@ -5,7 +5,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import welcomeSvg from '../../assets/images/welcome.svg';
 import { Link, Redirect } from 'react-router-dom';
 import { isAuth } from '../../helpers/auth';
-import { Key, LogIn, UserPlus } from '@geist-ui/react-icons';
+import { Key, LogIn } from '@geist-ui/react-icons';
 import { Button } from '@geist-ui/react';
 const Activation = ({ match }) => {
   const [formData, setFormData] = useState({
@@ -22,9 +22,10 @@ const Activation = ({ match }) => {
     if (token) {
       setFormData({ ...formData, name, token });
     }
+    // eslint-disable-next-line
   }, []);
 
-  const { name, token, show } = formData;
+  const { name, token } = formData;
 
   const onSubmit = async e => {
     e.preventDefault();

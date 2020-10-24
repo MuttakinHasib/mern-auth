@@ -1,8 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
 const { OAuth2Client } = require('google-auth-library');
-const { check, validationResult } = require('express-validator');
 const { errorHandler } = require('../helpers/errorHandling');
 const User = require('../models/User');
 const { hashPassword } = require('../helpers/hashPassword');
@@ -27,8 +25,8 @@ router.post('/', async (req, res) => {
         const token = await jwt.sign({ _id: user._id }, process.env.SECRET, {
           expiresIn: '7d',
         });
-
-        return res.status(200).json({ token, user });
+        const { _id, name, email } = user;
+        return res.status(200).json({ token, user: { _id, name, email } });
       } else {
         const password = await hashPassword(email + process.env.SECRET);
 
@@ -36,17 +34,20 @@ router.post('/', async (req, res) => {
 
         const data = await user.save();
 
-        const token = await jwt.sign({ _id: data._id }, process.env.SECRET, {
-          expiresIn: '7d',
-        });
-        return res.status(200).json({ token, user: data });
+        if (data) {
+          const { _id, name, email } = data;
+          const token = await jwt.sign({ _id }, process.env.SECRET, {
+            expiresIn: '7d',
+          });
+          return res.status(200).json({ token, user: { _id, name, email } });
+        }
       }
     } else {
       return res.status(400).json({ msg: 'Google sign in failed' });
     }
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ msg: err.message });
+    return res.status(500).json({ msg: errorHandler(err) });
   }
 });
 
